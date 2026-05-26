@@ -68,9 +68,12 @@ public function Activated()
                     }
                     break;
                 case GBioPawnComponent.BioPawnComponent_Accessory:
-                    for (idx = 0; idx < Pawn.m_aoAccessories[m_nAccessory].Materials.Length; idx++)
+                    if (Pawn.m_aoAccessories.Length > m_nAccessory)
                     {
-                        SetMaterialParameters(Pawn.m_aoAccessories[m_nAccessory].Materials[idx]);
+                        for (idx = 0; idx < Pawn.m_aoAccessories[m_nAccessory].Materials.Length; idx++)
+                        {
+                            SetMaterialParameters(Pawn.m_aoAccessories[m_nAccessory].Materials[idx]);
+                        }
                     }
                     break;
                 default:

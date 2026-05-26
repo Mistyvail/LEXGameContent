@@ -16,31 +16,31 @@ var(SFXSeqAct_SetActorMesh) bool m_bPreserveAnimation;
 public function Activated()
 {
     local Object ChkObject;
-    local SFXStuntActor StuntActor;
+    local SFXStuntActor SA;
     local SkeletalMeshActor SMA;
     
     foreach Targets(ChkObject, )
     {
-        StuntActor = SFXStuntActor(ChkObject);
-        if (StuntActor != None)
+        SA = SFXStuntActor(ChkObject);
+        if (SA != None)
         {
             switch (m_eActorComponent)
             {
                 case EActorComponent.ActorComponent_Mesh:
-                    SetComponentMesh(StuntActor, StuntActor.BodyMesh, m_oMesh, m_aoMaterials);
-                    UpdateBoneMap(StuntActor);
+                    SetComponentMesh(SA, SA.BodyMesh);
                     break;
                 case EActorComponent.ActorComponent_Head:
-                    SetComponentMesh(StuntActor, StuntActor.HeadMesh, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SA, SA.HeadMesh);
                     break;
                 case EActorComponent.ActorComponent_Hair:
-                    SetComponentMesh(StuntActor, StuntActor.HairMesh, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SA, SA.HairMesh);
                     break;
                 case EActorComponent.ActorComponent_Headgear:
-                    SetComponentMesh(StuntActor, StuntActor.HeadGearMesh, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SA, SA.HeadGearMesh);
                     break;
                 default:
             }
+            UpdateBoneMap(SA);
             continue;
         }
         SMA = SFXSkeletalMeshActor(ChkObject);
@@ -49,17 +49,20 @@ public function Activated()
             switch (m_eActorComponent)
             {
                 case EActorComponent.ActorComponent_Mesh:
-                    SetComponentMesh(SMA, SMA.SkeletalMeshComponent, m_oMesh, m_aoMaterials);
-                    UpdateBoneMap(SFXSkeletalMeshActor(SMA));
+                    SetComponentMesh(SMA, SMA.SkeletalMeshComponent);
                     break;
                 case EActorComponent.ActorComponent_Head:
-                    SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh);
                     break;
                 case EActorComponent.ActorComponent_Hair:
-                    SetComponentMesh(SMA, SFXSkeletalMeshActor(SMA).HairMesh, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SMA, SFXSkeletalMeshActor(SMA).HairMesh);
+                    break;
+                case EActorComponent.ActorComponent_Headgear:
+                    SetComponentMesh(SMA, SFXSkeletalMeshActor(SMA).HeadGearMesh);
                     break;
                 default:
             }
+            UpdateBoneMap(SMA);
             continue;
         }
         else
@@ -70,53 +73,54 @@ public function Activated()
                 switch (m_eActorComponent)
                 {
                     case EActorComponent.ActorComponent_Mesh:
-                        SetComponentMesh(SMA, SMA.SkeletalMeshComponent, m_oMesh, m_aoMaterials);
-                        UpdateBoneMap(SFXSkeletalMeshActorMAT(SMA));
+                        SetComponentMesh(SMA, SMA.SkeletalMeshComponent);
                         break;
                     case EActorComponent.ActorComponent_Head:
-                        SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh, m_oMesh, m_aoMaterials);
+                        SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh);
                         break;
                     case EActorComponent.ActorComponent_Hair:
-                        SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HairMesh, m_oMesh, m_aoMaterials);
+                        SetComponentMesh(SMA, SFXSkeletalMeshActorMAT(SMA).HairMesh);
                         break;
                     default:
                 }
+                UpdateBoneMap(SMA);
                 continue;
             }
             else
             {
                 SMA = SkeletalMeshActor(ChkObject);
-                if (SMA == None)
-                {
-                    SMA = SkeletalMeshActorMAT(ChkObject);
-                }
                 if (SMA != None)
                 {
-                    SetComponentMesh(SMA, SMA.SkeletalMeshComponent, m_oMesh, m_aoMaterials);
+                    SetComponentMesh(SMA, SMA.SkeletalMeshComponent);
+                    UpdateBoneMap(SMA);
                 }
             }
         }
     }
 }
-public function SetComponentMesh(Actor InActor, SkeletalMeshComponent InComponent, SkeletalMesh InMesh, array<MaterialInterface> InMaterials)
+public function SetComponentMesh(Actor InActor, SkeletalMeshComponent InComponent)
 {
     local MaterialInstanceConstant MIC;
     local int idx;
     
+    if (InComponent == None)
+    {
+        return;
+    }
     for (idx = 0; idx < InComponent.GetNumElements(); ++idx)
     {
         InComponent.SetMaterial(idx, None);
     }
-    InComponent.SetSkeletalMesh(InMesh, m_bPreserveAnimation);
+    InComponent.SetSkeletalMesh(m_oMesh, m_bPreserveAnimation);
     if (InComponent.SkeletalMesh != None)
     {
         for (idx = 0; idx < InComponent.SkeletalMesh.Materials.Length; ++idx)
         {
             MIC = new (InComponent) Class'MaterialInstanceConstant';
             MIC.SetParent(InComponent.SkeletalMesh.Materials[idx]);
-            if (InMaterials.Length > idx && InMaterials[idx] != None)
+            if (m_aoMaterials.Length > 0 && m_aoMaterials[idx] != None)
             {
-                MIC.SetParent(InMaterials[idx]);
+                MIC.SetParent(m_aoMaterials[idx]);
             }
             ApplyBasicOverrides(InActor, MIC);
             InComponent.SetMaterial(idx, MIC);

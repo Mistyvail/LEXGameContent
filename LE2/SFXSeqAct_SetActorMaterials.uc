@@ -23,13 +23,13 @@ public function Activated()
             switch (m_eActorComponent)
             {
                 case FActorComponent.ActorComponent_Mesh:
-                    SetComponentMaterials(SMA, SMA.SkeletalMeshComponent, m_aoMaterials);
+                    SetComponentMaterials(SMA, SMA.SkeletalMeshComponent);
                     break;
                 case FActorComponent.ActorComponent_Head:
-                    SetComponentMaterials(SMA, SFXSkeletalMeshActor(SMA).HeadMesh, m_aoMaterials);
+                    SetComponentMaterials(SMA, SFXSkeletalMeshActor(SMA).HeadMesh);
                     break;
                 case FActorComponent.ActorComponent_Hair:
-                    SetComponentMaterials(SMA, SFXSkeletalMeshActor(SMA).HairMesh, m_aoMaterials);
+                    SetComponentMaterials(SMA, SFXSkeletalMeshActor(SMA).HairMesh);
                     break;
                 default:
             }
@@ -43,13 +43,13 @@ public function Activated()
                 switch (m_eActorComponent)
                 {
                     case FActorComponent.ActorComponent_Mesh:
-                        SetComponentMaterials(SMA, SMA.SkeletalMeshComponent, m_aoMaterials);
+                        SetComponentMaterials(SMA, SMA.SkeletalMeshComponent);
                         break;
                     case FActorComponent.ActorComponent_Head:
-                        SetComponentMaterials(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh, m_aoMaterials);
+                        SetComponentMaterials(SMA, SFXSkeletalMeshActorMAT(SMA).HeadMesh);
                         break;
                     case FActorComponent.ActorComponent_Hair:
-                        SetComponentMaterials(SMA, SFXSkeletalMeshActorMAT(SMA).HairMesh, m_aoMaterials);
+                        SetComponentMaterials(SMA, SFXSkeletalMeshActorMAT(SMA).HairMesh);
                         break;
                     default:
                 }
@@ -60,25 +60,29 @@ public function Activated()
                 SMA = SkeletalMeshActor(ChkObject);
                 if (SMA != None)
                 {
-                    SetComponentMaterials(SMA, SMA.SkeletalMeshComponent, m_aoMaterials);
+                    SetComponentMaterials(SMA, SMA.SkeletalMeshComponent);
                 }
             }
         }
     }
 }
-public function SetComponentMaterials(Actor InActor, SkeletalMeshComponent InComponent, array<MaterialInterface> InMaterials)
+public function SetComponentMaterials(Actor InActor, SkeletalMeshComponent InComponent)
 {
     local MaterialInstanceConstant MIC;
     local int idx;
     
+    if (InComponent == None)
+    {
+        return;
+    }
     if (InComponent != None)
     {
         for (idx = 0; idx < InComponent.SkeletalMesh.Materials.Length; ++idx)
         {
-            if (InMaterials.Length > 0 && InMaterials[idx] != None)
+            if (m_aoMaterials.Length > 0 && m_aoMaterials[idx] != None)
             {
                 MIC = new (InComponent) Class'MaterialInstanceConstant';
-                MIC.SetParent(InMaterials[idx]);
+                MIC.SetParent(m_aoMaterials[idx]);
                 ApplyBasicOverrides(InActor, MIC);
                 InComponent.SetMaterial(idx, MIC);
             }

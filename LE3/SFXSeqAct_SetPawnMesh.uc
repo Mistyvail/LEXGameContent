@@ -34,13 +34,13 @@ public function Activated()
                     SetComponentMesh(Pawn, Pawn.Mesh, FALSE);
                     break;
                 case EBioPawnComponent.BioPawnComponent_Head:
-                    SetComponentMesh(Pawn, Pawn.m_oHeadMesh, FALSE);
+                    SetComponentMesh(Pawn, Pawn.HeadMesh, FALSE);
                     break;
                 case EBioPawnComponent.BioPawnComponent_Hair:
                     SetComponentMesh(Pawn, Pawn.m_oHairMesh, m_bCreateComponent);
                     break;
                 case EBioPawnComponent.BioPawnComponent_Headgear:
-                    SetComponentMesh(Pawn, Pawn.m_oHeadGearMesh, m_bCreateComponent);
+                    SetComponentMesh(Pawn, Pawn.m_oHeadgearMesh, m_bCreateComponent);
                     break;
                 case EBioPawnComponent.BioPawnComponent_Visor:
                     SetComponentMesh(Pawn, Pawn.m_oVisorMesh, m_bCreateComponent);
@@ -71,7 +71,7 @@ public function SkeletalMeshComponent CreateComponent(BioPawn InPawn)
     NewCmpt.bUseOnePassLightingOnTranslucency = TRUE;
     NewCmpt.SetParentAnimComponent(InPawn.Mesh);
     NewCmpt.SetShadowParent(InPawn.Mesh);
-    NewCmpt.SetLightEnvironment(InPawn.m_pLightEnvComponent);
+    NewCmpt.SetLightEnvironment(InPawn.LightEnvironment);
     InPawn.AttachComponent(NewCmpt);
     return NewCmpt;
 }
@@ -103,47 +103,9 @@ public function SetComponentMesh(BioPawn InPawn, SkeletalMeshComponent InCompone
             {
                 MIC.SetParent(m_aoMaterials[idx]);
             }
-            ApplyBasicOverrides(InPawn, MIC);
             InComponent.SetMaterial(idx, MIC);
         }
     }
-}
-public function ApplyBasicOverrides(BioPawn InPawn, MaterialInstanceConstant InMaterial)
-{
-    local BioMaterialOverride Overrides;
-    local ColorParameter Param;
-    
-    Overrides = GetOverrides(InPawn);
-    if (Overrides == None)
-    {
-        return;
-    }
-    foreach Overrides.m_aColorOverrides(Param, )
-    {
-        if (Param.nName == 'SkinTone' || Param.nName == 'HED_Hair_Colour_Vector')
-        {
-            InMaterial.SetVectorParameterValue(Param.nName, Param.cValue);
-        }
-    }
-}
-public function BioMaterialOverride GetOverrides(BioPawn InPawn)
-{
-    local BioMorphFace Morph;
-    
-    Morph = InPawn.m_oBehavior.m_oAppearanceType.m_oMorphFace;
-    if (Morph == None)
-    {
-        Morph = BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMorphFace;
-    }
-    if (Morph.m_oMaterialOverrides != None)
-    {
-        return Morph.m_oMaterialOverrides;
-    }
-    if (BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMaterialOverrides != None)
-    {
-        return BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMaterialOverrides;
-    }
-    return None;
 }
 public function UpdateBoneMap(BioPawn InPawn)
 {
@@ -151,6 +113,7 @@ public function UpdateBoneMap(BioPawn InPawn)
     
     foreach InPawn.ComponentList(Class'SkeletalMeshComponent', MeshCmpt)
     {
+        MeshCmpt.MinAutoLODLevel = 0;
         if (MeshCmpt != None && MeshCmpt != InPawn.Mesh)
         {
             MeshCmpt.UpdateParentBoneMap();

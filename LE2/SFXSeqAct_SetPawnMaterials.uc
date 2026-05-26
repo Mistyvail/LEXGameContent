@@ -28,65 +28,90 @@ public function Activated()
             switch (m_eBioPawnComponent)
             {
                 case FBioPawnComponent.BioPawnComponent_Mesh:
-                    SetComponentMaterials(Pawn, Pawn.Mesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, Pawn.Mesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Head:
-                    SetComponentMaterials(Pawn, Pawn.HeadMesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, Pawn.HeadMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Hair:
-                    SetComponentMaterials(Pawn, Pawn.m_oHairMesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, Pawn.m_oHairMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Headgear:
-                    SetComponentMaterials(Pawn, Pawn.m_oHeadGearMesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, SFXPawn_Henchman(Pawn) != None ? SFXPawn_Henchman(Pawn).HelmetMesh : Pawn.m_oHeadGearMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Visor:
-                    SetComponentMaterials(Pawn, Pawn.m_oVisorMesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, Pawn.m_oVisorMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_FacePlate:
-                    SetComponentMaterials(Pawn, Pawn.m_oFacePlateMesh, m_aoMaterials);
+                    SetComponentMaterials(Pawn, Pawn.m_oFacePlateMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Accessory:
-                    SetComponentMaterials(Pawn, Pawn.m_aoAccessories[m_nAccessory], m_aoMaterials);
+                    if (Pawn.m_aoAccessories.Length > m_nAccessory)
+                    {
+                        SetComponentMaterials(Pawn, Pawn.m_aoAccessories[m_nAccessory]);
+                    }
                     break;
                 default:
             }
         }
     }
 }
-public function SetComponentMaterials(BioPawn InPawn, SkeletalMeshComponent InComponent, array<MaterialInterface> InMaterials)
+public function SetComponentMaterials(BioPawn InPawn, SkeletalMeshComponent InComponent)
 {
     local MaterialInstanceConstant MIC;
     local int idx;
     
-    if (InComponent != None)
+    if (InComponent == None)
     {
-        for (idx = 0; idx < InComponent.SkeletalMesh.Materials.Length; ++idx)
+        return;
+    }
+    for (idx = 0; idx < InComponent.SkeletalMesh.Materials.Length; ++idx)
+    {
+        if (m_aoMaterials.Length != 0 && m_aoMaterials[idx] != None)
         {
-            if (InMaterials[idx] != None)
-            {
-                MIC = new (InComponent) Class'MaterialInstanceConstant';
-                MIC.SetParent(InMaterials[idx]);
-                ApplyBasicOverrides(InPawn, MIC);
-                InComponent.SetMaterial(idx, MIC);
-            }
+            MIC = new (InComponent) Class'MaterialInstanceConstant';
+            MIC.SetParent(m_aoMaterials[idx]);
+            ApplyBasicOverrides(InPawn, MIC);
+            InComponent.SetMaterial(idx, MIC);
         }
     }
 }
 public function ApplyBasicOverrides(BioPawn InPawn, MaterialInstanceConstant InMaterial)
 {
+    local BioPawnBehavior Behavior;
+    local BioInterface_Appearance_Pawn AppearanceType;
     local BioMorphFace Morph;
+    local BioMaterialOverride Overrides;
     local ColorParameter Param;
     
-    Morph = InPawn.MorphHead;
-    if (Morph.m_oMaterialOverrides == None)
+    if (SFXPawn(InPawn) != None)
     {
-        Morph = BioPawnType(InPawn.ActorType).m_oMorphFace;
+        Behavior = BioPawnBehavior(InPawn.oBioComponent);
+        if (Behavior != None)
+        {
+            if (BioInterface_Appearance_Pawn(Behavior.m_oAppearanceType) != None)
+            {
+                Overrides = BioInterface_Appearance_Pawn(Behavior.m_oAppearanceType).m_pMaterialParameters;
+            }
+        }
     }
-    if (Morph == None || Morph.m_oMaterialOverrides == None)
+    else
+    {
+        Morph = InPawn.MorphHead;
+        if (Morph == None || Morph.m_oMaterialOverrides == None)
+        {
+            Morph = BioPawnType(InPawn.ActorType).m_oMorphFace;
+        }
+        if (Morph != None)
+        {
+            Overrides = Morph.m_oMaterialOverrides;
+        }
+    }
+    if (Overrides == None)
     {
         return;
     }
-    foreach Morph.m_oMaterialOverrides.m_aColorOverrides(Param, )
+    foreach Overrides.m_aColorOverrides(Param, )
     {
         if (Param.nName == 'SkinTone' || Param.nName == 'HED_Hair_Colour_Vector')
         {

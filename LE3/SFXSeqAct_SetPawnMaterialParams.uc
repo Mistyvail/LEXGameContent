@@ -50,7 +50,7 @@ public function Activated()
                     }
                     break;
                 case GBioPawnComponent.BioPawnComponent_Headgear:
-                    MeshCmpt = SFXPawn_Henchman(Pawn) != None ? SFXPawn_Henchman(Pawn).HelmetMesh : Pawn.m_oHeadGearMesh;
+                    MeshCmpt = Pawn.m_oHeadgearMesh;
                     for (idx = 0; idx < MeshCmpt.Materials.Length; idx++)
                     {
                         SetMaterialParameters(MeshCmpt.Materials[idx]);

@@ -31,13 +31,13 @@ public function Activated()
                     SetComponentMaterials(Pawn, Pawn.Mesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Head:
-                    SetComponentMaterials(Pawn, Pawn.m_oHeadMesh);
+                    SetComponentMaterials(Pawn, Pawn.HeadMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Hair:
                     SetComponentMaterials(Pawn, Pawn.m_oHairMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Headgear:
-                    SetComponentMaterials(Pawn, Pawn.m_oHeadGearMesh);
+                    SetComponentMaterials(Pawn, Pawn.m_oHeadgearMesh);
                     break;
                 case FBioPawnComponent.BioPawnComponent_Visor:
                     SetComponentMaterials(Pawn, Pawn.m_oVisorMesh);
@@ -71,47 +71,9 @@ public function SetComponentMaterials(BioPawn InPawn, SkeletalMeshComponent InCo
         {
             MIC = new (InComponent) Class'MaterialInstanceConstant';
             MIC.SetParent(m_aoMaterials[idx]);
-            ApplyBasicOverrides(InPawn, MIC);
             InComponent.SetMaterial(idx, MIC);
         }
     }
-}
-public function ApplyBasicOverrides(BioPawn InPawn, MaterialInstanceConstant InMaterial)
-{
-    local BioMaterialOverride Overrides;
-    local ColorParameter Param;
-    
-    Overrides = GetOverrides(InPawn);
-    if (Overrides == None)
-    {
-        return;
-    }
-    foreach Overrides.m_aColorOverrides(Param, )
-    {
-        if (Param.nName == 'SkinTone' || Param.nName == 'HED_Hair_Colour_Vector')
-        {
-            InMaterial.SetVectorParameterValue(Param.nName, Param.cValue);
-        }
-    }
-}
-public function BioMaterialOverride GetOverrides(BioPawn InPawn)
-{
-    local BioMorphFace Morph;
-    
-    Morph = InPawn.m_oBehavior.m_oAppearanceType.m_oMorphFace;
-    if (Morph == None)
-    {
-        Morph = BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMorphFace;
-    }
-    if (Morph.m_oMaterialOverrides != None)
-    {
-        return Morph.m_oMaterialOverrides;
-    }
-    if (BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMaterialOverrides != None)
-    {
-        return BioPawnChallengeScaledType(InPawn.m_oBehavior.m_oActorType).m_oMaterialOverrides;
-    }
-    return None;
 }
 
 //class default properties can be edited in the Properties tab for the class's Default__ object.

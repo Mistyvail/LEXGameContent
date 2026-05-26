@@ -10,9 +10,6 @@ This needs to be repeated every new Legendary Explorer session.
     - Checks Player Pawns Class (Adept, Vanguard, etc), and activates the corresponding output.
 - **SFXSeqCond_IsDLCInstalled**
     - Checks if a DLC is installed by finding its tlk.
-- **SFXSeqAct_SetPawnAppearance**
-    - Changes a BioPawns Meshes, Materials, and Material Parameters.
-    - Material Parameters will be applied to all skeletal components; it's not limited to new meshes.
 - **SFXSeqAct_SetPawnMesh**
     - Targets a BioPawns Component and changes its Mesh and associated materials.
 	- The *m_eBioPawnComponent* variable determines which component.
@@ -55,9 +52,6 @@ This needs to be repeated every new Legendary Explorer session.
 ## LE2 Blocks
 - **SFXSeqCond_GetPlayerClass**
     - Checks Player Pawns Class (Adept, Vanguard, etc), and activates the corresponding output.
-- **SFXSeqAct_SetPawnAppearance**
-    - Changes a BioPawns Meshes, Materials, and Material Parameters.
-    - Material Parameters will be applied to all skeletal components; it's not limited to new meshes.
 - **SFXSeqAct_SetPawnMesh**
     - Targets a BioPawns Component and changes its Mesh and associated materials.
     - The *m_eBioPawnComponent* variable determines which component.
@@ -67,10 +61,6 @@ This needs to be repeated every new Legendary Explorer session.
 - **SFXSeqAct_SetPawnMaterialParams**
     - Changes a BioPawns Vector, Scalar, and Texture Parameters.
     - The *m_eBioPawnComponent* variable determines which component; if None, applies to all.
-- **SFXSeqAct_SetActorAppearance**
-    - Changes a SkeletalMeshActors Meshes, Materials, and Material Parameters.
-    - Material Parameters will be applied to all skeletal components; it's not limited to new meshes.
-	- Works on SFXSkeletalMeshActors, SFXSkeletalMeshActorMATs, and SkeletalMeshActors.
 - **SFXSeqAct_SetActorMesh**
     - Targets a SkeletalMeshActors Component and changes its Mesh and associated materials.
     - The *m_eBioPawnComponent* variable determines which component.
@@ -92,10 +82,15 @@ This needs to be repeated every new Legendary Explorer session.
 ## LE3 Blocks
 - **SFXSeqCond_GetPlayerClass**
     - Checks Player Pawns Class (Adept, Vanguard, etc), and activates the corresponding output.
-- **SFXSeqAct_SetActorAppearance**
-    - Changes a SkeletalMeshActors Meshes, Materials, and Material Parameters.
-    - Material Parameters will be applied to all skeletal components; it's not limited to new meshes.
-	- Works on SFXStuntActors, SFXSkeletalMeshActors, SFXSkeletalMeshActorMATs, SkeletalMeshActors, and SkeletalMeshActorMATs.
+- **SFXSeqAct_SetPawnMesh**
+    - Targets a BioPawns Component and changes its Mesh and associated materials.
+    - The *m_eBioPawnComponent* variable determines which component.
+- **SFXSeqAct_SetPawnMaterials**
+    - Targets a BioPawns Component and changes its Materials.
+    - The *m_eBioPawnComponent* variable determines which component.
+- **SFXSeqAct_SetPawnMaterialParams**
+    - Changes a BioPawns Vector, Scalar, and Texture Parameters.
+    - The *m_eBioPawnComponent* variable determines which component; if None, applies to all.
 - **SFXSeqAct_SetActorMesh**
     - Targets a SkeletalMeshActors Component and changes its Mesh and associated materials.
     - The *m_eBioPawnComponent* variable determines which component.
